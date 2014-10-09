@@ -1,0 +1,30 @@
+\ Calculate the n-th fibonacci number, where n is the number at the top of the stack
+\ Note that this naive recursive method is very inefficient, but it demonstrates some
+\ stack/auxiliary stack juggling to implement a recursion.
+
+defun fibonacci
+{
+	dup 2 <		\ {n ...} --> {(n<2) n ...}
+
+	ifthen 
+	{}			\ {n ...} --> {fib(n)} by definition of fib(1) and fib(0)
+	else { 
+   	     1 -		\ {n ...} --> {(n-1) ...}
+	     dup		\ {(n-1) ...} --> {(n-1) (n-1) ...}
+	     1 -		\ {(n-1) (n-1) ...} --> {(n-2) (n-1) ...} 
+    	     fibonacci    	\ Recursion: {(n-2) (n-1) ...} --> {fib(n-2) (n-1)}
+	     ->aux		\ opr:{fib(n-2) (n-1) ...} --> opr:{(n-1) ...} aux:{fib(n-2) ...}
+	     fibonacci		\ Recursion: {(n-2) ...} --> {fib(n-2) ...}
+	     aux->		\ opr:{fib(n-1) ...} aux:{fib(n-2) ...} --> opr:{fib(n-2) fib(n-1) ...}
+	     +			\ {fib(n-2) fib(n-1) ...} --> {fib(n) ...} 
+	}			
+}
+
+-1 true				\ {} --> {true -1}
+while { 
+      1 +			\ {k} --> {(k+1)}
+      dup			\ {j} --> {j j}
+      fibonacci			\ {j j} --> {fib(j) j}
+      println			\ {fib(j) j} --> {j}
+      dup 30 <			\ {j ...} --> {(j < 20) j ...}
+}
